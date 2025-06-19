@@ -1,11 +1,11 @@
 FROM python:3.9-slim-buster
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /rabbitmq
 
 # Copy the current directory contents into the container at /app
-COPY . /app
+COPY . /rabbitmq
 
-RUN pip install Flask requests pymongo 
+RUN pip install pika
 
-CMD ["python", "main.py"]
+CMD ["python", "consumer.py"]

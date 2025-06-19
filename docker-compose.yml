@@ -1,6 +1,40 @@
 services:
+  consumer:
+    build: ./rabbitmq
+    container_name: network_trial_consumer
+    networks:
+      - networktrial_my_rabbitmq_network
+    external_links:
+      - rabbitmq_local:rabbitmq_local
+
   app:
     build: ./app
     container_name: network_trial_app
     ports:
       - "5000:5000"  # Expose container port 5000 to host
+    #depends_on:
+      #- rabbitmq_local # Ensures rabbitmq_local starts before python_consumer
+    networks:
+      - networktrial_my_rabbitmq_network # Connect to the same custom network
+    external_links: 
+      - rabbitmq_local:rabbitmq_local
+
+# add in custom network to existing rabbitmq container: docker network connect networktrial_my_rabbitmq_network rabbitmq_local
+# check with: docker network inspect networktrial_my_rabbitmq_network
+#  rabbitmq_local: # This is the service name for RabbitMQ
+#    image: rabbitmq:3-management
+#    container_name: rabbitmq_local # Optional: keeps your existing container name
+#    ports:
+#      - "5672:5672" # Standard AMQP port
+#      - "15672:15672" # Management UI
+#    networks:
+#      - my_rabbitmq_network # Connect to our custom network
+
+#networks:
+#  my_rabbitmq_network:
+#    driver: bridge # A user-defined bridge network
+
+networks:
+  networktrial_my_rabbitmq_network:
+    external: true # Tell Docker Compose that this network already exists
+
